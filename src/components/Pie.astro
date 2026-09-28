@@ -1,0 +1,24 @@
+---
+// Pie de página: logo, dirección, Instagram, año y créditos (centro.mostrarCreditos).
+import { Image } from "astro:assets";
+import { Icon } from "astro-icon/components";
+import isotipo from "../assets/marca/isotipo.png";
+import { centro, direccionCompleta } from "../data/centro";
+const año = new Date().getFullYear();
+---
+<footer class="contenedor flex flex-col gap-6 py-12 text-sm text-suave sm:flex-row sm:items-center sm:justify-between" style="padding-bottom: calc(3rem + env(safe-area-inset-bottom, 0px))">
+  <div class="flex items-center gap-3">
+    <Image src={isotipo} alt="" width={40} height={40} densities={[1, 2]} class="size-10" />
+    <div>
+      <p class="font-titulo text-xl text-primario">{centro.nombre}</p>
+      <p class="mt-0.5">{direccionCompleta}</p>
+    </div>
+  </div>
+  <div class="flex flex-col gap-2 sm:items-end">
+    <a href={centro.instagram} target="_blank" rel="noopener" class="inline-flex items-center gap-2 hover:text-primario">
+      <Icon name="simple-icons:instagram" class="size-4" /> Instagram
+    </a>
+    <p>© {año} {centro.nombre}</p>
+    {centro.mostrarCreditos && <p>Hecho por Código Lengua</p>}
+  </div>
+</footer>

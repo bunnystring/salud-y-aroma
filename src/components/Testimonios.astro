@@ -1,0 +1,16 @@
+---
+// Testimonios de clientas en formato de cita grande.
+// Contenido: centro.testimonios (si está vacío, la sección no se muestra).
+import { centro } from "../data/centro";
+---
+{centro.testimonios.length > 0 && (
+  <section class="contenedor seccion">
+    {centro.testimonios.map((t) => (
+      <figure class="revelar mx-auto max-w-3xl text-center">
+        <span class="block font-titulo text-7xl leading-none text-primario" aria-hidden="true">“</span>
+        <blockquote class="mt-2 font-titulo text-2xl leading-snug sm:text-3xl">{t.texto}</blockquote>
+        <figcaption class="mt-6 text-suave">{t.nombre}, clienta</figcaption>
+      </figure>
+    ))}
+  </section>
+)}

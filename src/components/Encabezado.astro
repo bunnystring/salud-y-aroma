@@ -1,0 +1,47 @@
+---
+// Encabezado fijo: logo, menú de secciones, Instagram y botón "Agendar" por WhatsApp.
+// Es transparente sobre la portada y se vuelve sólido al bajar (clase "solido", script en Base.astro).
+// En celular el menú es un <details> que se cierra al elegir una opción o tocar fuera.
+import { Image } from "astro:assets";
+import { Icon } from "astro-icon/components";
+import isotipo from "../assets/marca/isotipo.png";
+import { centro, enlaceWhatsApp } from "../data/centro";
+// Cada href apunta al id de una sección de la página.
+const enlaces = [
+  { href: "#servicios", texto: "Servicios" },
+  { href: "#trabajo", texto: "Nuestro trabajo" },
+  { href: "#nosotros", texto: "Nosotros" },
+  { href: "#ubicacion", texto: "Ven y conócenos" },
+];
+---
+<header class="encabezado fixed inset-x-0 top-0 z-40 border-b border-borde/70 bg-fondo/95 backdrop-blur" style="padding-top: env(safe-area-inset-top, 0px)">
+  <div class="fila contenedor flex h-[4.5rem] items-center justify-between gap-4">
+    <a href="#inicio" class="marca flex items-center gap-3 text-primario" aria-label={`${centro.nombre}, ir al inicio`}>
+      <Image src={isotipo} alt="" width={40} height={40} densities={[1, 2, 3]} class="size-9 shrink-0 sm:size-10" loading="eager" />
+      <span class="font-titulo text-xl whitespace-nowrap sm:text-2xl">{centro.nombre}</span>
+    </a>
+    <nav aria-label="Principal" class="hidden items-center gap-8 text-[0.95rem] text-suave lg:flex">
+      {enlaces.map((e) => <a href={e.href} class="transition-colors hover:text-primario">{e.texto}</a>)}
+      <a href={centro.instagram} target="_blank" rel="noopener" aria-label={`Instagram de ${centro.nombre}`} class="transition-colors hover:text-primario">
+        <Icon name="simple-icons:instagram" class="size-4" />
+      </a>
+    </nav>
+    <div class="flex items-center gap-2">
+      <a href={enlaceWhatsApp} class="boton-principal size-10 p-0! text-sm sm:size-auto sm:px-4! sm:py-2!" target="_blank" rel="noopener" aria-label="Agendar por WhatsApp">
+        <Icon name="simple-icons:whatsapp" class="size-4" />
+        <span class="hidden sm:inline">Agendar</span>
+      </a>
+      <details class="menu-movil relative lg:hidden">
+        <summary class="marca flex size-10 cursor-pointer list-none items-center justify-center rounded-full text-primario" aria-label="Abrir menú">
+          <Icon name="lucide:menu" class="size-6" />
+        </summary>
+        <nav aria-label="Menú" class="absolute right-0 mt-3 w-60 rounded-2xl border border-borde bg-fondo p-2 text-tinta shadow-xl shadow-tinta/10">
+          {enlaces.map((e) => <a href={e.href} class="block rounded-xl px-4 py-3 hover:bg-tinte">{e.texto}</a>)}
+          <a href={centro.instagram} target="_blank" rel="noopener" class="flex items-center gap-2 rounded-xl px-4 py-3 hover:bg-tinte">
+            <Icon name="simple-icons:instagram" class="size-4 text-primario" /> Instagram
+          </a>
+        </nav>
+      </details>
+    </div>
+  </div>
+</header>

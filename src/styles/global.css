@@ -1,0 +1,103 @@
+@import "tailwindcss";
+
+/* Estilos globales del sitio: tema de Tailwind, clases comunes (.contenedor, .seccion,
+   botones, fotos), parallax, animaciones de aparición y comportamiento del encabezado.
+   Colores y fuentes vienen de src/data/centro.ts (se inyectan en <html> desde Base.astro). */
+@theme inline {
+  --color-primario: var(--c-primario);
+  --color-acento: var(--c-acento);
+  --color-fondo: var(--c-fondo);
+  --color-tinte: var(--c-tinte);
+  --color-tinta: var(--c-tinta);
+  --color-suave: var(--c-texto-suave);
+  --color-borde: var(--c-borde);
+  --color-vino: var(--c-vino);
+  --font-titulo: var(--f-titulos), "Didot", "Bodoni 72", Georgia, serif;
+  --font-texto: var(--f-texto), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --ease-suave: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+@layer base {
+  html { scroll-behavior: smooth; scroll-padding-top: 5rem; -webkit-text-size-adjust: 100%; }
+  body { @apply bg-fondo font-texto text-tinta antialiased; font-size: 1.0625rem; line-height: 1.65; }
+  h1, h2, h3 { @apply font-titulo text-tinta; font-weight: 400; letter-spacing: -0.01em; text-wrap: balance; }
+  p { text-wrap: pretty; }
+  :focus-visible { outline: 2px solid var(--c-primario); outline-offset: 3px; border-radius: 4px; }
+}
+
+@layer components {
+  .contenedor { @apply mx-auto w-full max-w-6xl px-5 sm:px-8; }
+  .seccion { @apply py-20 sm:py-28; }
+  .titulo-seccion { @apply text-4xl leading-[1.1] sm:text-5xl; }
+  .intro-seccion { @apply mt-4 max-w-xl text-suave; }
+
+  .boton-principal { @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-[0.95rem] font-medium transition-colors duration-300 bg-primario text-white hover:bg-tinta; }
+  .boton-secundario { @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-[0.95rem] font-medium transition-colors duration-300 border border-primario text-primario hover:bg-tinte; }
+
+  /* ---------- Fotos ---------- */
+  .foto { @apply relative overflow-clip bg-tinte; isolation: isolate; }
+  .foto picture { position: absolute; inset: 0; transition: transform 1.2s var(--ease-suave); }
+  .foto img { width: 100%; height: 100%; object-fit: cover; }
+  .foto-vacia {
+    @apply absolute inset-0 flex flex-col items-center justify-center gap-1 p-4 text-center text-primario;
+    background-image: repeating-linear-gradient(135deg, transparent 0 14px, color-mix(in srgb, var(--c-primario) 5%, transparent) 14px 15px);
+  }
+  .foto-vacia small { @apply text-xs text-suave; }
+  .etiqueta-ilustrativa {
+    @apply absolute bottom-3 left-3 z-10 rounded-full bg-white/85 px-3 py-1 text-xs text-tinta backdrop-blur;
+  }
+  .arco { border-radius: 999px 999px 1.25rem 1.25rem; }
+
+  /* Zoom mínimo al pasar el mouse por una tarjeta */
+  @media (hover: hover) {
+    .tarjeta:hover .foto picture { transform: scale(1.035); }
+  }
+}
+
+/* ---------- Parallax: animación ligada al scroll, nativa del navegador ---------- */
+:root { --parallax: 7%; }
+@media (max-width: 640px) { :root { --parallax: 4%; } }
+.parallax { scale: 1.16; will-change: translate; }
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .parallax { animation-name: parallax; animation-timing-function: linear; animation-fill-mode: both; }
+    /* Selector distinto a propósito: evita que el minificador lo fusione en "animation" */
+    img.parallax, video.parallax { animation-timeline: view(); }
+    @keyframes parallax {
+      from { translate: 0 calc(var(--parallax) * -1); }
+      to { translate: 0 var(--parallax); }
+    }
+  }
+}
+
+/* ---------- Transiciones al aparecer (solo con JavaScript activo) ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  .js .revelar {
+    opacity: 0;
+    translate: 0 1.5rem;
+    transition: opacity 0.9s var(--ease-suave), translate 0.9s var(--ease-suave);
+    transition-delay: var(--retraso, 0ms);
+  }
+  .js .revelar .foto picture { scale: 1.06; transition: scale 1.4s var(--ease-suave), transform 1.2s var(--ease-suave); transition-delay: var(--retraso, 0ms); }
+  .js .revelar.visible { opacity: 1; translate: none; }
+  .js .revelar.visible .foto picture { scale: 1; }
+
+  /* Entrada de la portada: un único momento orquestado al cargar */
+  .entrada { animation: entrada 1s var(--ease-suave) both; animation-delay: var(--retraso, 0ms); }
+  @keyframes entrada { from { opacity: 0; translate: 0 1rem; } }
+  .entrada-foto { animation: entrada-foto 1.6s var(--ease-suave) both; }
+  @keyframes entrada-foto { from { opacity: 0; } }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+
+/* ---------- Encabezado: transparente sobre la portada, sólido al bajar ---------- */
+.encabezado { transition: background-color 0.5s var(--ease-suave), border-color 0.5s var(--ease-suave), height 0.5s var(--ease-suave); }
+.encabezado .fila { transition: height 0.5s var(--ease-suave); }
+.encabezado:not(.solido) { background: transparent; border-color: transparent; }
+.encabezado:not(.solido) .marca { color: #fff; }
+.encabezado:not(.solido) > .fila > nav a { color: rgb(255 255 255 / 0.82); }
+.encabezado:not(.solido) > .fila > nav a:hover { color: #fff; }
+.menu-movil summary::-webkit-details-marker { display: none; }
+.encabezado.solido .fila { height: 3.75rem; }

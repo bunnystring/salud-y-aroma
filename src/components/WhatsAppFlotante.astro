@@ -1,0 +1,12 @@
+---
+// Botón flotante de WhatsApp, fijo en la esquina inferior derecha en toda la página.
+import { Icon } from "astro-icon/components";
+import { enlaceWhatsApp } from "../data/centro";
+---
+<aside aria-label="Contacto rápido">
+<a href={enlaceWhatsApp} target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp"
+  class="fixed right-5 z-50 flex size-14 items-center justify-center rounded-full bg-primario text-white shadow-lg shadow-primario/30 transition-transform hover:scale-105"
+  style="bottom: calc(1.25rem + env(safe-area-inset-bottom, 0px))">
+  <Icon name="simple-icons:whatsapp" class="size-6" />
+</a>
+</aside>

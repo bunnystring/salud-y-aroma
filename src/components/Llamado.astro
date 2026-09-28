@@ -1,0 +1,17 @@
+---
+// Llamado a la acción final: franja de color con botón para agendar por WhatsApp.
+import { Icon } from "astro-icon/components";
+import { centro, enlaceWhatsApp } from "../data/centro";
+---
+<section class="bg-primario py-20 text-white sm:py-24">
+  <div class="contenedor revelar flex flex-col items-start justify-between gap-8 md:flex-row md:items-center">
+    <div>
+      <h2 class="text-white! titulo-seccion">¿Lista para tu valoración?</h2>
+      <p class="mt-4 max-w-lg text-white/80">Escríbenos y te respondemos con los horarios disponibles esta semana.</p>
+    </div>
+    <a href={enlaceWhatsApp} class="inline-flex shrink-0 items-center gap-2 rounded-full bg-acento px-6 py-3 text-[0.95rem] font-medium text-tinta transition-colors duration-300 hover:bg-white" target="_blank" rel="noopener">
+      <Icon name="simple-icons:whatsapp" class="size-4" />
+      Escríbenos por WhatsApp
+    </a>
+  </div>
+</section>

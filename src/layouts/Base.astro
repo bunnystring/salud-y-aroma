@@ -1,0 +1,158 @@
+---
+// Estructura HTML común del sitio:
+// - Fuentes (Bodoni Moda y Figtree, incluidas vía @fontsource) y estilos globales.
+// - Colores y fuentes de centro.ts inyectados como variables CSS en <html>.
+// - SEO: título, descripción, canonical, Open Graph (imagen generada de la foto "portada")
+//   y datos estructurados de negocio local (schema.org BeautySalon) para Google.
+// - Script final con los efectos de la página (ver comentarios dentro).
+import "@fontsource/bodoni-moda/400.css";
+import "@fontsource/bodoni-moda/500.css";
+import "@fontsource/figtree/400.css";
+import "@fontsource/figtree/500.css";
+import "@fontsource/figtree/600.css";
+import "../styles/global.css";
+import { getImage } from "astro:assets";
+import { centro } from "../data/centro";
+
+const { colores: c, fuentes: f } = centro;
+const titulo = `${centro.nombre} | Centro de estética en ${centro.localidad}, ${centro.ciudad}`;
+const descripcion = centro.descripcionSeo;
+const variables = `--c-primario:${c.primario};--c-acento:${c.acento};--c-fondo:${c.fondo};--c-tinte:${c.tinte};--c-vino:${c.vino};--c-tinta:${c.tinta};--c-texto-suave:${c.textoSuave};--c-borde:${c.borde};--f-titulos:"${f.titulos}";--f-texto:"${f.texto}"`;
+
+// Imagen para compartir en redes: la foto de portada a 1200 px en JPG.
+const portadas = import.meta.glob<{ default: ImageMetadata }>("/src/assets/fotos/portada.*", { eager: true });
+const portada = Object.values(portadas)[0]?.default;
+const og = portada ? await getImage({ src: portada, width: 1200, format: "jpg", quality: 80 }) : null;
+
+// Convierte centro.horarios al formato que entiende Google (OpeningHoursSpecification).
+// Cada texto de "dias" en centro.ts debe existir en esta tabla; si se usa uno nuevo
+// (p. ej. "Martes a sábado"), agrégalo aquí o ese horario no se enviará a Google.
+const dias: Record<string, string[]> = {
+  "Lunes a viernes": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+  "Lunes a sábado": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+  "Sábados": ["Saturday"],
+  "Domingos": ["Sunday"],
+};
+// "6:00 p. m." -> "18:00"
+const a24 = (t: string) => {
+  const m = t.match(/(\d{1,2}):(\d{2})\s*([ap])/i);
+  if (!m) return t;
+  let h = Number(m[1]) % 12;
+  if (m[3].toLowerCase() === "p") h += 12;
+  return `${String(h).padStart(2, "0")}:${m[2]}`;
+};
+const horariosSchema = centro.horarios
+  .filter((h) => dias[h.dias])
+  .map((h) => {
+    const [abre, cierra] = h.horas.split(/\s+a\s+(?=\d)/);
+    return { "@type": "OpeningHoursSpecification", dayOfWeek: dias[h.dias], opens: a24(abre), closes: a24(cierra) };
+  });
+// Ficha de negocio local para buscadores (JSON-LD).
+const datosNegocio = {
+  "@context": "https://schema.org",
+  "@type": "BeautySalon",
+  name: centro.nombre,
+  description: centro.descripcionSeo,
+  url: centro.sitio,
+  ...(og && { image: new URL(og.src, centro.sitio).href }),
+  telephone: `+${centro.whatsapp}`,
+  priceRange: "$$",
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: centro.direccion,
+    addressLocality: centro.ciudad,
+    addressRegion: centro.region,
+    addressCountry: "CO",
+  },
+  areaServed: `${centro.localidad}, ${centro.ciudad}`,
+  sameAs: [centro.instagram],
+  openingHoursSpecification: horariosSchema,
+  makesOffer: centro.servicios
+    .filter((s) => !s.nombre.includes("por confirmar"))
+    .map((s) => ({ "@type": "Offer", itemOffered: { "@type": "Service", name: s.nombre, description: s.descripcion } })),
+};
+---
+<!doctype html>
+<html lang="es-CO" style={variables}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{titulo}</title>
+    <meta name="description" content={descripcion} />
+    <meta name="theme-color" content={c.vino} />
+    <link rel="canonical" href={centro.sitio} />
+    <meta name="robots" content="index, follow" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={centro.nombre} />
+    <meta property="og:url" content={centro.sitio} />
+    <meta property="og:title" content={titulo} />
+    <meta property="og:description" content={descripcion} />
+    <meta property="og:locale" content="es_CO" />
+    {og && <meta property="og:image" content={new URL(og.src, centro.sitio).href} />}
+    {og && <meta property="og:image:width" content={String(og.attributes.width ?? 1200)} />}
+    {og && <meta property="og:image:alt" content={`${centro.nombre}, centro de estética en ${centro.localidad}`} />}
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" href="/favicon.png" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="sitemap" href="/sitemap.xml" />
+    {centro.portada.video && <link rel="preload" as="image" href={`${centro.portada.video}-poster.webp`} fetchpriority="high" />}
+    <!-- La clase "js" activa las animaciones de entrada solo si hay JavaScript -->
+    <script is:inline>document.documentElement.classList.add("js");</script>
+    <script type="application/ld+json" set:html={JSON.stringify(datosNegocio)} />
+  </head>
+  <body>
+    <slot />
+    <script is:inline>
+      (() => {
+        const reducir = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+        // Secciones que aparecen suavemente, una sola vez
+        const io = new IntersectionObserver((entradas) => {
+          for (const e of entradas) if (e.isIntersecting) { e.target.classList.add("visible"); io.unobserve(e.target); }
+        }, { rootMargin: "0px 0px -8% 0px" });
+        document.querySelectorAll(".revelar").forEach((el) => io.observe(el));
+
+        // Menú de celular: se cierra al elegir una opción o tocar fuera
+        const menu = document.querySelector(".menu-movil");
+        if (menu) {
+          menu.querySelectorAll("a").forEach((a) => a.addEventListener("click", () => menu.removeAttribute("open")));
+          document.addEventListener("click", (e) => { if (!menu.contains(e.target)) menu.removeAttribute("open"); });
+        }
+
+        // Encabezado sólido al bajar
+        const cab = document.querySelector(".encabezado");
+        const actualizar = () => cab && cab.classList.toggle("solido", scrollY > 40);
+        addEventListener("scroll", actualizar, { passive: true }); actualizar();
+
+        // Videos: se reproducen solo cuando están en pantalla
+        const videos = document.querySelectorAll("video[data-auto]");
+        if (reducir) videos.forEach((v) => { v.removeAttribute("autoplay"); v.pause(); });
+        else {
+          const iov = new IntersectionObserver((entradas) => {
+            for (const e of entradas) e.isIntersecting ? e.target.play().catch(() => {}) : e.target.pause();
+          }, { threshold: 0.25 });
+          videos.forEach((v) => { if (v.preload !== "auto") v.preload = "auto"; iov.observe(v); });
+        }
+
+        // Respaldo del parallax para navegadores sin animaciones ligadas al scroll
+        if (!reducir && !CSS.supports("animation-timeline: view()")) {
+          const els = [...document.querySelectorAll(".parallax")];
+          const cuanto = innerWidth <= 640 ? 4 : 7;
+          let pendiente = false;
+          const mover = () => {
+            const vh = innerHeight;
+            for (const el of els) {
+              const r = el.parentElement.getBoundingClientRect();
+              if (r.bottom < 0 || r.top > vh) continue;
+              const t = (r.top + r.height / 2 - vh / 2) / (vh / 2 + r.height / 2);
+              el.style.translate = `0 ${(-t * cuanto).toFixed(2)}%`;
+            }
+            pendiente = false;
+          };
+          addEventListener("scroll", () => { if (!pendiente) { pendiente = true; requestAnimationFrame(mover); } }, { passive: true });
+          mover();
+        }
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,44 @@
+---
+// Sección "Nosotros" (#nosotros): "Por qué elegirnos" con foto e íconos,
+// y "Quiénes te atienden" con los retratos del equipo.
+// Contenido: centro.fotoNosotros, centro.diferenciadores y centro.equipo.
+import { Icon } from "astro-icon/components";
+import Foto from "./Foto.astro";
+import { centro } from "../data/centro";
+---
+<section id="nosotros" class="contenedor seccion">
+  <div class="grid items-center gap-12 md:grid-cols-2 md:gap-20">
+    <div class="revelar">
+      <Foto nombre={centro.fotoNosotros.foto} alt={centro.fotoNosotros.alt} etiqueta="Foto del centro" foco={centro.fotoNosotros.foco} class="aspect-[4/5] rounded-2xl" sizes="(min-width: 768px) 45vw, 100vw" parallax />
+    </div>
+    <div class="revelar" style="--retraso:150ms">
+      <h2 class="titulo-seccion">Por qué elegirnos</h2>
+      <ul class="mt-10 space-y-8">
+        {centro.diferenciadores.map((d) => (
+          <li class="flex gap-4">
+            <Icon name={d.icono} class="mt-1 size-5 shrink-0 text-primario" />
+            <div>
+              <h3 class="font-texto text-lg font-medium">{d.titulo}</h3>
+              <p class="mt-1 text-suave">{d.texto}</p>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+
+  <div class="mt-28">
+    <h2 class="titulo-seccion revelar">Quiénes te atienden</h2>
+    <div class="mt-10 grid grid-cols-2 gap-6 sm:max-w-2xl sm:gap-10">
+      {centro.equipo.map((p, i) => (
+        <figure class="revelar" style={`--retraso:${i * 150}ms`}>
+          <Foto nombre={p.foto} alt={`${p.nombre}, ${p.rol}`} etiqueta={`Foto de ${p.nombre.split(" ")[0]}`} class="arco aspect-[3/4]" sizes="(min-width: 640px) 320px, 50vw" />
+          <figcaption class="mt-4">
+            <p class="font-titulo text-2xl">{p.nombre}</p>
+            <p class="text-suave">{p.rol}</p>
+          </figcaption>
+        </figure>
+      ))}
+    </div>
+  </div>
+</section>

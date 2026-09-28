@@ -1,0 +1,24 @@
+---
+// Sección de servicios (#servicios): tarjetas con foto, descripción y precio,
+// en 1, 2 o 3 columnas según el ancho de pantalla.
+// Contenido: centro.servicios y centro.notaPrecios.
+import Foto from "./Foto.astro";
+import { centro } from "../data/centro";
+---
+<section id="servicios" class="contenedor seccion">
+  <div class="revelar">
+    <h2 class="titulo-seccion">Servicios</h2>
+    <p class="intro-seccion">Cada tratamiento empieza con una valoración, para saber qué necesita tu piel.</p>
+  </div>
+  <div class="mt-14 grid gap-x-8 gap-y-14 sm:grid-cols-2 lg:grid-cols-3">
+    {centro.servicios.map((s, i) => (
+      <article class="tarjeta revelar" style={`--retraso:${(i % 3) * 120}ms`}>
+        <Foto nombre={s.foto} alt={s.alt ?? s.nombre} etiqueta={`Foto: ${s.nombre.toLowerCase()}`} foco={s.foco} ilustrativa={s.ilustrativa} class="aspect-[4/3] rounded-2xl" parallax />
+        <h3 class="mt-5 text-2xl">{s.nombre}</h3>
+        <p class="mt-2 text-suave">{s.descripcion}</p>
+        <p class:list={["mt-3 font-medium", s.precio.includes("confirmar") ? "text-suave" : "text-primario"]}>{s.precio}</p>
+      </article>
+    ))}
+  </div>
+  {centro.notaPrecios && <p class="revelar mt-12 text-sm text-suave">{centro.notaPrecios}</p>}
+</section>

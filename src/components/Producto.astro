@@ -1,0 +1,27 @@
+---
+// Sección de producto para el cuidado en casa, con botón de WhatsApp y mensaje propio.
+// Contenido: centro.producto (si es null, la sección no se muestra).
+import { Icon } from "astro-icon/components";
+import Foto from "./Foto.astro";
+import { centro } from "../data/centro";
+const { producto } = centro;
+const enlace = producto ? `https://wa.me/${centro.whatsapp}?text=${encodeURIComponent(producto.mensajeWhatsapp)}` : "";
+---
+{producto && (
+  <section class="seccion bg-tinte">
+    <div class="contenedor grid items-center gap-12 md:grid-cols-[0.9fr_1.1fr] md:gap-20">
+      <div class="revelar mx-auto w-full max-w-sm">
+        <Foto nombre={producto.foto} alt={producto.alt} etiqueta="Foto del producto" class="arco aspect-[4/5]" sizes="(min-width: 768px) 384px, 90vw" />
+      </div>
+      <div class="revelar" style="--retraso:150ms">
+        <h2 class="titulo-seccion">{producto.titulo}</h2>
+        <p class="mt-6 font-titulo text-2xl text-primario">{producto.nombre}</p>
+        <p class="mt-3 max-w-md text-suave">{producto.descripcion}</p>
+        <a href={enlace} class="boton-secundario mt-8" target="_blank" rel="noopener">
+          <Icon name="simple-icons:whatsapp" class="size-4" />
+          Preguntar por WhatsApp
+        </a>
+      </div>
+    </div>
+  </section>
+)}

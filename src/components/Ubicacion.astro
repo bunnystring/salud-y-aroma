@@ -1,0 +1,49 @@
+---
+// Sección de ubicación (#ubicacion): dirección, horarios, teléfono, Instagram,
+// foto de la fachada y mapa de Google. Detrás del mapa hay un enlace a Google Maps
+// que queda visible si el mapa embebido no carga.
+// Contenido: datos de contacto, centro.horarios y centro.fotoFachada.
+import { Icon } from "astro-icon/components";
+import Foto from "./Foto.astro";
+import { centro, direccionCompleta, enlaceComoLlegar, enlaceMapa, usuarioInstagram } from "../data/centro";
+---
+<section id="ubicacion" class="seccion bg-tinte">
+  <div class="contenedor grid gap-12 md:grid-cols-2 md:gap-16">
+    <div class="revelar">
+      <h2 class="titulo-seccion">Así nos encuentras</h2>
+      <p class="mt-6 flex items-start gap-3 text-lg">
+        <Icon name="lucide:map-pin" class="mt-1.5 size-5 shrink-0 text-primario" />
+        {direccionCompleta}
+      </p>
+      <dl class="mt-8 space-y-3">
+        {centro.horarios.map((h) => (
+          <div class="flex justify-between gap-6 border-b border-borde pb-3">
+            <dt class="text-suave">{h.dias}</dt>
+            <dd class="font-medium">{h.horas}</dd>
+          </div>
+        ))}
+      </dl>
+      <p class="mt-6 flex items-center gap-3">
+        <Icon name="lucide:phone" class="size-5 text-primario" />
+        <a href={`tel:+${centro.whatsapp}`} class="hover:text-primario">{centro.telefono}</a>
+      </p>
+      <p class="mt-3 flex items-center gap-3">
+        <Icon name="simple-icons:instagram" class="size-5 text-primario" />
+        <a href={centro.instagram} target="_blank" rel="noopener" class="hover:text-primario">{usuarioInstagram}</a>
+      </p>
+      <a href={enlaceComoLlegar} class="boton-principal mt-9" target="_blank" rel="noopener">
+        <Icon name="lucide:navigation" class="size-4" />
+        Cómo llegar
+      </a>
+    </div>
+    <Foto nombre={centro.fotoFachada} alt={`Fachada de ${centro.nombre} en ${direccionCompleta}`} etiqueta="Foto: fachada del local" class="revelar aspect-[4/3] rounded-2xl bg-fondo md:aspect-auto" sizes="(min-width: 768px) 45vw, 100vw" />
+  </div>
+  <div class="contenedor mt-12">
+    <div class="mapa relative h-80 overflow-hidden rounded-2xl border border-borde bg-fondo">
+      <a href={enlaceComoLlegar} target="_blank" rel="noopener" class="absolute inset-0 flex items-center justify-center gap-2 text-primario">
+        <Icon name="lucide:map-pin" class="size-5" /> Ver en Google Maps
+      </a>
+      <iframe src={enlaceMapa} title={`Mapa de ${centro.nombre}`} class="absolute inset-0 h-full w-full" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
+  </div>
+</section>

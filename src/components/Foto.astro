@@ -1,0 +1,69 @@
+---
+// Componente de imagen usado en todo el sitio.
+// Busca la foto en src/assets/fotos/ por su nombre (sin extensión) y la sirve optimizada
+// (AVIF + WebP, varios tamaños). Si el archivo aún no existe, muestra un recuadro
+// "Foto pendiente" con la etiqueta, para detectar fácilmente qué foto falta.
+// Props:
+//   nombre       archivo en src/assets/fotos/ sin extensión
+//   alt          texto alternativo (accesibilidad y SEO)
+//   etiqueta     texto del recuadro cuando falta la foto (por defecto, el alt)
+//   foco         object-position: qué parte se conserva al recortar ("50% 30%")
+//   sizes        ancho que ocupa en pantalla, para elegir el tamaño a descargar
+//   eager        cargar de inmediato (solo para la primera imagen visible)
+//   ilustrativa  muestra la etiqueta "Imagen ilustrativa" sobre la foto
+//   parallax     activa el efecto parallax (ver global.css)
+import { Picture } from "astro:assets";
+import { Icon } from "astro-icon/components";
+
+const archivos = import.meta.glob<{ default: ImageMetadata }>(
+  "/src/assets/fotos/*.{jpg,jpeg,png,webp,avif}",
+  { eager: true },
+);
+const porNombre: Record<string, ImageMetadata> = Object.fromEntries(
+  Object.entries(archivos).map(([ruta, m]) => [ruta.split("/").pop()!.replace(/\.[^.]+$/, ""), m.default]),
+);
+
+interface Props {
+  nombre: string;
+  alt: string;
+  etiqueta?: string;
+  class?: string;
+  sizes?: string;
+  foco?: string;
+  eager?: boolean;
+  ilustrativa?: boolean;
+  parallax?: boolean;
+}
+const {
+  nombre, alt, etiqueta = alt, class: clase = "",
+  sizes = "(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw",
+  foco = "50% 50%", eager = false, ilustrativa = false, parallax = false,
+} = Astro.props;
+const imagen = porNombre[nombre];
+const anchos = imagen ? [480, 800, 1200, 1600, 2000, 2400].filter((w) => w <= imagen.width) : [];
+if (imagen && !anchos.includes(imagen.width) && imagen.width < 2400) anchos.push(imagen.width);
+---
+<div class:list={["foto", clase]}>
+  {imagen ? (
+    <Picture
+      src={imagen}
+      alt={alt}
+      formats={["avif", "webp"]}
+      widths={anchos}
+      sizes={sizes}
+      quality={70}
+      loading={eager ? "eager" : "lazy"}
+      decoding="async"
+      fetchpriority={eager ? "high" : "auto"}
+      class:list={[parallax && "parallax"]}
+      style={`object-position:${foco}`}
+    />
+  ) : (
+    <div class="foto-vacia" aria-hidden="true" title={`Agrega src/assets/fotos/${nombre}.jpg`}>
+      <Icon name="lucide:camera" class="size-6 opacity-70" />
+      <span class="text-sm font-medium">{etiqueta}</span>
+      <small>Foto pendiente</small>
+    </div>
+  )}
+  {imagen && ilustrativa && <span class="etiqueta-ilustrativa">Imagen ilustrativa</span>}
+</div>

@@ -1,0 +1,60 @@
+---
+// Portada (#inicio): video de fondo (o foto, si centro.portada.video está vacío),
+// título, subtítulo y botones de WhatsApp y "Cómo llegar".
+// Los textos entran en secuencia con la clase "entrada" y el retraso de --retraso.
+// Contenido: centro.portada, gancho, titulo, subtitulo y resumenHorario.
+import { Icon } from "astro-icon/components";
+import Foto from "./Foto.astro";
+import { centro, enlaceWhatsApp, enlaceComoLlegar } from "../data/centro";
+const { portada } = centro;
+---
+<section id="inicio" class="relative overflow-clip bg-vino text-white">
+  <!-- Fondo: video a lo ancho en computador; bloque superior en celular -->
+  <div class="entrada-foto relative h-[68svh] overflow-clip md:absolute md:inset-0 md:h-auto">
+    {portada.video ? (
+      <video
+        class="parallax absolute inset-0 h-full w-full object-cover"
+        style={`object-position:${portada.focoVideo}`}
+        autoplay muted loop playsinline preload="auto" data-auto
+        poster={`${portada.video}-poster.webp`}
+        aria-hidden="true"
+      >
+        <source src={`${portada.video}-movil.mp4`} type="video/mp4" media="(max-width: 767px)" />
+        <source src={`${portada.video}.webm`} type="video/webm" />
+        <source src={`${portada.video}.mp4`} type="video/mp4" />
+      </video>
+    ) : (
+      <Foto nombre={portada.foto} alt={`Rostro con piel cuidada, ${centro.nombre}`} etiqueta="Foto principal" class="absolute! inset-0 bg-vino!" foco={portada.foco} sizes="100vw" eager parallax />
+    )}
+    <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-vino via-vino/10 to-transparent md:hidden"></div>
+    <div class="pointer-events-none absolute inset-0 hidden bg-gradient-to-r from-vino via-vino/75 via-35% to-transparent to-75% md:block"></div>
+    <div class="pointer-events-none absolute inset-x-0 bottom-0 hidden h-40 bg-gradient-to-t from-vino/70 to-transparent md:block"></div>
+  </div>
+
+  <div class="contenedor relative z-10 flex flex-col justify-center pt-4 pb-16 md:min-h-[100svh] md:py-32">
+    <div class="max-w-xl">
+      {centro.gancho && (
+        <p class="entrada mb-7 inline-flex w-fit items-center gap-2 rounded-full border border-acento/60 px-4 py-1.5 text-sm text-acento" style="--retraso:100ms">
+          <Icon name="lucide:sparkles" class="size-4" />
+          {centro.gancho}
+        </p>
+      )}
+      <h1 class="entrada text-5xl leading-[1.04] text-white! sm:text-6xl lg:text-7xl" style="--retraso:250ms">{centro.titulo}</h1>
+      <p class="entrada mt-6 max-w-lg text-lg text-white/80" style="--retraso:400ms">{centro.subtitulo}</p>
+      <div class="entrada mt-10 flex flex-wrap gap-3" style="--retraso:550ms">
+        <a href={enlaceWhatsApp} class="inline-flex items-center gap-2 rounded-full bg-acento px-6 py-3 text-[0.95rem] font-medium text-tinta transition-colors duration-300 hover:bg-white" target="_blank" rel="noopener">
+          <Icon name="simple-icons:whatsapp" class="size-4" />
+          Agenda por WhatsApp
+        </a>
+        <a href={enlaceComoLlegar} class="inline-flex items-center gap-2 rounded-full border border-white/40 px-6 py-3 text-[0.95rem] font-medium text-white transition-colors duration-300 hover:bg-white/10" target="_blank" rel="noopener">
+          <Icon name="lucide:navigation" class="size-4" />
+          Cómo llegar
+        </a>
+      </div>
+      <p class="entrada mt-10 flex items-center gap-2 text-sm text-white/65" style="--retraso:700ms">
+        <Icon name="lucide:clock" class="size-4" />
+        {centro.resumenHorario} · {centro.localidad}, {centro.ciudad}
+      </p>
+    </div>
+  </div>
+</section>

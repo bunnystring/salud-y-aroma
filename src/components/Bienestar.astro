@@ -1,0 +1,15 @@
+---
+// Franja de bienestar: foto a pantalla completa con parallax y un texto encima.
+// Contenido: centro.bienestar.
+import Foto from "./Foto.astro";
+import { centro } from "../data/centro";
+const { bienestar } = centro;
+---
+<section class="relative h-[75svh] min-h-[28rem] overflow-clip bg-vino text-white">
+  <Foto nombre={bienestar.foto} alt={bienestar.alt} etiqueta="Foto de bienestar" foco={bienestar.foco} class="absolute! inset-0 bg-vino!" sizes="100vw" parallax />
+  <div class="absolute inset-0 bg-gradient-to-t from-vino/85 via-vino/25 to-transparent"></div>
+  <div class="contenedor revelar relative flex h-full flex-col justify-end pb-16 sm:pb-20">
+    <h2 class="max-w-xl text-4xl leading-[1.1] text-white! sm:text-6xl">{bienestar.titulo}</h2>
+    <p class="mt-4 max-w-md text-lg text-white/80">{bienestar.texto}</p>
+  </div>
+</section>

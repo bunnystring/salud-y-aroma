@@ -1,0 +1,22 @@
+---
+// Galería "Nuestro trabajo" (#trabajo) con fotos reales del centro.
+// Cuadrícula tipo mosaico: la foto 1 ocupa dos filas, la 5 dos filas en computador
+// y la 6 dos columnas; por eso 1 y 5 deben ser verticales y 6 horizontal.
+// Contenido: centro.galeria.
+import Foto from "./Foto.astro";
+import { centro } from "../data/centro";
+---
+<section id="trabajo" class="contenedor seccion">
+  <div class="revelar">
+    <h2 class="titulo-seccion">Nuestro trabajo</h2>
+    <p class="intro-seccion">Procedimientos reales hechos en nuestro centro.</p>
+  </div>
+  <div class="mt-12 grid grid-flow-dense auto-rows-[10rem] grid-cols-2 gap-3 sm:auto-rows-[13rem] md:grid-cols-3 md:gap-4">
+    {centro.galeria.map((g, i) => (
+      <div class:list={["revelar", i === 0 && "row-span-2", i === 4 && "md:row-span-2", i === 5 && "col-span-2"]} style={`--retraso:${(i % 3) * 100}ms`}>
+        <Foto nombre={g.foto} alt={g.etiqueta} etiqueta={g.etiqueta} class="h-full rounded-2xl" sizes="(min-width: 768px) 33vw, 50vw" />
+      </div>
+    ))}
+  </div>
+  <p class="mt-5 text-sm text-suave">Fotos compartidas con autorización de nuestras clientas.</p>
+</section>

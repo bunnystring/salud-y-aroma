@@ -1,0 +1,25 @@
+FOTOS DEL SITIO DE SALUD Y AROMA
+Cada foto se guarda en esta carpeta (src/assets/fotos/) con el nombre indicado.
+Puede ser .jpg, .png o .webp. Al compilar, Astro la convierte a AVIF y WebP
+en varios tamaños, así que conviene subirla en buena calidad (hasta 2400 px por lado).
+Si una foto falta, su lugar en la página muestra un recuadro "Foto pendiente".
+
+EN EL SITIO
+portada                 Foto de portada e imagen al compartir en redes
+depilacion-laser, maquillaje-permanente, cejas-hilo, moldeo-corporal
+                        Tarjetas de servicios
+tratamiento-facial, pestanas
+                        Tarjetas de servicios (imágenes ilustrativas, llevan la etiqueta)
+masajes-piedras         Franja de bienestar
+crema-facial            Sección "Por qué elegirnos"
+producto-locion         Sección de producto
+
+PENDIENTES (fotos reales del centro)
+trabajo-1 … trabajo-6   Galería "Nuestro trabajo": procedimientos y resultados reales
+                        (1 y 5 verticales; 6 horizontal). Solo con autorización de la clienta.
+equipo-olga             Retrato de Olga, vertical, fondo limpio
+equipo-angelica         Retrato de Angélica, vertical
+local-fachada           Fachada, para que la reconozcan al llegar (horizontal)
+
+Cambiar una foto: reemplaza el archivo con el mismo nombre.
+Cambiar qué parte se ve al recortar: edita "foco" en src/data/centro.ts.
