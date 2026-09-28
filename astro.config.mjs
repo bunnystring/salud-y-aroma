@@ -5,7 +5,8 @@ import { centro } from "./src/data/centro";
 
 // Configuración de Astro: dominio del sitio (de centro.ts), íconos (astro-icon) y Tailwind CSS.
 export default defineConfig({
-  site: centro.sitio,
+  site: 'https://bunnystring.github.io',
+  base: '/salud-y-aroma',
   integrations: [icon()],
   vite: { plugins: [tailwindcss()] },
 });

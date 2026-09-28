@@ -7,21 +7,23 @@ import { Icon } from "astro-icon/components";
 import Foto from "./Foto.astro";
 import { centro, enlaceWhatsApp, enlaceComoLlegar } from "../data/centro";
 const { portada } = centro;
+// Ruta del video con el "base" del sitio (p. ej. /salud-y-aroma/videos/portada)
+const video = portada.video && import.meta.env.BASE_URL.replace(/\/$/, "") + portada.video;
 ---
 <section id="inicio" class="relative overflow-clip bg-vino text-white">
   <!-- Fondo: video a lo ancho en computador; bloque superior en celular -->
   <div class="entrada-foto relative h-[68svh] overflow-clip md:absolute md:inset-0 md:h-auto">
-    {portada.video ? (
+    {video ? (
       <video
         class="parallax absolute inset-0 h-full w-full object-cover"
         style={`object-position:${portada.focoVideo}`}
         autoplay muted loop playsinline preload="auto" data-auto
-        poster={`${portada.video}-poster.webp`}
+        poster={`${video}-poster.webp`}
         aria-hidden="true"
       >
-        <source src={`${portada.video}-movil.mp4`} type="video/mp4" media="(max-width: 767px)" />
-        <source src={`${portada.video}.webm`} type="video/webm" />
-        <source src={`${portada.video}.mp4`} type="video/mp4" />
+        <source src={`${video}-movil.mp4`} type="video/mp4" media="(max-width: 767px)" />
+        <source src={`${video}.webm`} type="video/webm" />
+        <source src={`${video}.mp4`} type="video/mp4" />
       </video>
     ) : (
       <Foto nombre={portada.foto} alt={`Rostro con piel cuidada, ${centro.nombre}`} etiqueta="Foto principal" class="absolute! inset-0 bg-vino!" foco={portada.foco} sizes="100vw" eager parallax />
